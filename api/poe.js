@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  const ACCESS_KEY = "your-32-char-poe-access-key";
+  const ACCESS_KEY = "jrpyg8WQqGa0EZbakaVSbjD3SZkn15U3";
 
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, poe-access-key");
