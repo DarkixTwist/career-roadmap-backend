@@ -1,27 +1,50 @@
 export default async function handler(req, res) {
-  const ACCESS_KEY = "jrpyg8WQqGa0EZbakaVSbjD3SZkn15U3";
+  const HF_API_TOKEN = "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"; // Your HF token
+  const VERIFY_TOKEN = "jrpyg8WQqGa0EZbakaVSbjD3SZkn15U3"; // Must match Poe bot setting
 
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, poe-access-key");
-  if (req.method === "OPTIONS") return res.status(200).end();
+  if (req.method === "POST") {
+    const body = req.body;
 
-  if (req.method === 'POST') {
-    if (req.headers["poe-access-key"] !== ACCESS_KEY) {
-      return res.status(401).send("❌ Invalid Access Key");
+    // Poe verification
+    if (body.type === "ping") {
+      return res.status(200).json({ pong: true });
     }
 
-    const body = req.body;
-    if (!body.message) return res.status(400).send("❌ No message provided");
+    // Verify token
+    if (req.headers["poe-verify-token"] !== VERIFY_TOKEN) {
+      return res.status(401).send("Unauthorized");
+    }
 
     const userMessage = body.message;
 
-    const responseText = `✅ Career Roadmap for ${userMessage}:\n\n1. Choose Science after 10th...\n2. Prepare for NEET...\n3. Complete MBBS...\n4. Do Internship...\n5. Apply for jobs...`;
+    // Call Hugging Face Inference API
+    const hfResponse = await fetch("https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${HF_API_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        inputs: `<s>[INST] ${userMessage} [/INST]</s>`,
+        options: { wait_for_model: true }
+      }),
+    });
+
+    if (!hfResponse.ok) {
+      return res.status(500).json({
+        type: "message",
+        message: {
+          text: `❌ Error: Failed to fetch from Hugging Face`,
+        },
+      });
+    }
+
+    const data = await hfResponse.json();
+    const reply = data?.[0]?.generated_text || "Sorry, I couldn't generate a response.";
 
     return res.status(200).json({
       type: "message",
-      message: {
-        text: responseText
-      }
+      message: { text: reply },
     });
   } else {
     return res.status(405).send("Method Not Allowed");
