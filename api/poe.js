@@ -22,7 +22,7 @@ export default async function handler(req, res) {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          model: "provider-1/chatgpt-4o-latest",
+          model: "provider-5/chatgpt-4o-latest",
           messages: [
             { role: "system", content: "You are a helpful AI career roadmap assistant." },
             { role: "user", content: message }
