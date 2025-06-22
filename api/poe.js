@@ -1,3 +1,6 @@
+// 1. Import JSON
+import roadmaps from '/data/roadmaps.json'; // adjust path as needed
+
 export default async function handler(req, res) {
   const ACCESS_KEY = "jrpyg8WQqGa0EZbakaVSbjD3SZkn15U3";
 
@@ -13,9 +16,10 @@ export default async function handler(req, res) {
     const body = req.body;
     if (!body.message) return res.status(400).send("❌ No message provided");
 
-    const userMessage = body.message;
+    const userMessage = body.message.trim().toLowerCase();
 
-    const responseText = `✅ Career Roadmap for ${userMessage}:\n\n1. Choose Science after 10th...\n2. Prepare for NEET...\n3. Complete MBBS...\n4. Do Internship...\n5. Apply for jobs...`;
+    // 2. Find response from JSON
+    const responseText = roadmaps[userMessage] || "❌ Sorry, I don't have a roadmap for that field yet.";
 
     return res.status(200).json({
       type: "message",
