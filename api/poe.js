@@ -1,5 +1,5 @@
 // 1. Import JSON
-import roadmaps from 'data/roadmaps.json'; // adjust path as needed
+import roadmaps from '../data/roadmaps.json'; // adjust path as needed
 
 export default async function handler(req, res) {
   const ACCESS_KEY = "jrpyg8WQqGa0EZbakaVSbjD3SZkn15U3";
